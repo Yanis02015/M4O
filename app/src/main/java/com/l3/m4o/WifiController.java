@@ -3,6 +3,7 @@ package com.l3.m4o;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -14,8 +15,10 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiNetworkSuggestion;
+import android.provider.Settings;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
@@ -35,15 +38,28 @@ public class WifiController {
                 context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     }
 
-    public void startWifiResult() {
+    public void startWifiEnable() {
+        int wifiState = wifiManager.getWifiState();
+        if (wifiState != WifiManager.WIFI_STATE_ENABLED) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q)
+                enableWifiInSettings();
+            else
+                wifiManager.setWifiEnabled(true);
+        } else {
+            this.startWifiResult();
+        }
+    }
 
+    public void startWifiResult() {
         BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+
                 boolean success = intent.getBooleanExtra(
                         WifiManager.EXTRA_RESULTS_UPDATED, false);
                 boolean connectionSuccess = isConnected();
                 System.out.println(success + " " + connectionSuccess);
+
                 if (success && !isConnected()) {
                     System.out.println("On est pas connecté >>> startConnection");
                     startConnection(getListScanResult());
@@ -52,7 +68,8 @@ public class WifiController {
                     scanFailure();
                 } else {
                     System.out.println("On est connecté au bon wifi");
-                    MainActivity.listen.setValue("Do action");
+                    Toast.makeText(context, "AAAAAA", Toast.LENGTH_SHORT).show();
+                    MainActivity.listenForPlayStream.setValue("Do action");
                 }
             }
         };
@@ -68,42 +85,22 @@ public class WifiController {
         }
     }
 
-    public void startConnection() {
+    private void enableWifiInSettings() {
+        System.out.println("log");
+        new AlertDialog.Builder(context)
+                .setTitle("Activation du WI-FI")
+                .setMessage("Votre wifi est desactiver, voulez vous l'activer à fin de pouvoir commencer l'analyse ?")
+                .setPositiveButton(android.R.string.yes, (dialog, which) ->
+                        goToSettings())
+                .setNegativeButton(android.R.string.no, null)
+                .setIcon(R.drawable.ic_baseline_wifi_off)
+                .show();
+    }
+
+    private void goToSettings() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            final WifiNetworkSuggestion suggestion =
-                    new WifiNetworkSuggestion.Builder()
-                            .setSsid(WIFI_SSID)
-                            .setWpa2Passphrase(WIFI_PASS)
-                            .setIsAppInteractionRequired(true)
-                            .build();
-
-            final List<WifiNetworkSuggestion> suggestionsList =
-                    new ArrayList<WifiNetworkSuggestion>() {{
-                        add(suggestion);
-                    }};
-            final WifiManager manager =
-                    (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-
-            final int status = manager.addNetworkSuggestions(suggestionsList);
-            if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
-                System.out.println("Wifi not added");
-            }
-            final IntentFilter intentFilter =
-                    new IntentFilter(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION);
-
-            final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (!intent.getAction().equals(
-                            WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION)) {
-                        return;
-                    }
-                    System.out.println("added réussi !");
-                    // do post connect processing here...
-                }
-            };
-            context.registerReceiver(broadcastReceiver, intentFilter);
+            Intent myIntent = new Intent(Settings.Panel.ACTION_WIFI);
+            context.startActivity(myIntent);
         }
     }
 
@@ -124,13 +121,10 @@ public class WifiController {
                             new ArrayList<WifiNetworkSuggestion>() {{
                                 add(suggestion);
                             }};
-                    //final WifiManager manager =
-                    //        (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
 
                     final int status = wifiManager.addNetworkSuggestions(suggestionsList);
                     if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
-                        // do error handling here…
+                        // Todo error handling here…
                     }
                     final IntentFilter intentFilter =
                             new IntentFilter(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION);
@@ -142,7 +136,7 @@ public class WifiController {
                                     WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION)) {
                                 return;
                             }
-                            // do post connect processing here...
+                            // TODO : do post connect processing here...
                             //MainActivity.listen.setValue("Go to action");
                         }
                     };

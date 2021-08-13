@@ -1,5 +1,6 @@
 package com.l3.m4o;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -8,9 +9,13 @@ import androidx.lifecycle.Observer;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Menu;
 import android.widget.Button;
 import android.widget.Toast;
@@ -32,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private final Context context = this;
-    int i = 0;
-    public static MutableLiveData<String> listen = new MutableLiveData<>();
+    public static MutableLiveData<String> listenForPlayStream = new MutableLiveData<>();
+    public static MutableLiveData<String> listenForEnableWifi = new MutableLiveData<>();
     WifiController wifiController;
     Button btnGo;
     VideoView videoView;
@@ -45,12 +50,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         this.configureToolbar();
-        listen.observe(this, new Observer<String>() {
+
+        listenForPlayStream.observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
-                i++;
-                System.out.println("Value is changed");
-                Toast.makeText(context, "i = " + i, Toast.LENGTH_SHORT).show();
+                System.out.println("Value listenForPlayStream is changed");
                 startStream();
             }
         });
@@ -58,12 +62,14 @@ public class MainActivity extends AppCompatActivity {
         wifiController = new WifiController(context);
         btnGo = findViewById(R.id.activity_main_go_btn);
         btnGo.setOnClickListener(v -> {
-            if (permissionIsOK())
+            if (permissionIsOK()) {
                 triggerMechanism();
+            }
+
             else
                 System.out.println("permission denied");
         });
-        //Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        //Intent myIntent = new Intent(Settings.ACTION_WIFI_SETTINGS);
         //startActivity(myIntent);
     }
 
@@ -79,13 +85,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void triggerMechanism() {
-        wifiController.startWifiResult();
+        wifiController.startWifiEnable();
     }
 
     public void startStream() {
-        /*videoView.setVideoURI(Uri.parse(RTSP_URL1));
-        videoView.requestFocus();
-        videoView.start();*/
         LibVLC libVLC = new LibVLC(this);
         MediaPlayer mediaPlayer = new MediaPlayer(libVLC);
         mediaPlayer.attachViews(vlcVideoLayout, null, false, false);
@@ -104,28 +107,15 @@ public class MainActivity extends AppCompatActivity {
                         PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.CHANGE_WIFI_STATE) !=
                 PackageManager.PERMISSION_GRANTED) {
-            System.out.println("Demande de permission");
+            Toast.makeText(context, "Les permissions de localisation sont requises", Toast.LENGTH_SHORT).show();
             requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
                             Manifest.permission.CHANGE_WIFI_STATE,
                             Manifest.permission.ACCESS_FINE_LOCATION},
                     REQUEST_CODE_ASK_PERMISSION);
             return false;
         } else {
-            System.out.println(
-                    Manifest.permission.ACCESS_FINE_LOCATION +
-                            " / " +
-                            Manifest.permission.ACCESS_COARSE_LOCATION +
-                            " / " +
-                            Manifest.permission.CHANGE_WIFI_STATE +
-                            " / " +
-                            PackageManager.PERMISSION_GRANTED +
-                            " / " +
-                            ActivityCompat.checkSelfPermission(this,
-                                    Manifest.permission.ACCESS_FINE_LOCATION)
-            );
             System.out.println("PERMISSION GRANTED");
         }
-
         return true;
     }
 }
