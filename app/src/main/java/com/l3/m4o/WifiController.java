@@ -6,8 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiNetworkSuggestion;
 import android.widget.Toast;
@@ -23,28 +27,32 @@ public class WifiController {
     public static final String WIFI_PASS = "AZEROTH.1406";
 
     private final Context context;
-    private WifiManager wifiManager;
+    private final WifiManager wifiManager;
 
     public WifiController(Context context) {
         this.context = context;
+        this.wifiManager = (WifiManager)
+                context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     }
 
     public void startWifiResult() {
-        wifiManager = (WifiManager)
-                context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        wifiManager.setWifiEnabled(true);
 
         BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 boolean success = intent.getBooleanExtra(
                         WifiManager.EXTRA_RESULTS_UPDATED, false);
-                if (success) {
-                    System.out.println("C OK ?");
-                    startConnection(scanSuccess());
-                } else {
-                    System.out.println("C PAS OK");
+                boolean connectionSuccess = isConnected();
+                System.out.println(success + " " + connectionSuccess);
+                if (success && !isConnected()) {
+                    System.out.println("On est pas connecté >>> startConnection");
+                    startConnection(getListScanResult());
+                } else if(!isConnected()) {
+                    System.out.println("Impossible de scanner");
                     scanFailure();
+                } else {
+                    System.out.println("On est connecté au bon wifi");
+                    MainActivity.listen.setValue("Do action");
                 }
             }
         };
@@ -55,14 +63,55 @@ public class WifiController {
 
         boolean success = wifiManager.startScan();
         if (!success) {
-            System.out.println("C PAS DU TOUT OK");
+            System.out.println("!success >>> scanFailure");
             scanFailure();
         }
     }
 
-    private void startConnection(List<ScanResult> scanSuccess) {
-        for(ScanResult result : scanSuccess){
+    public void startConnection() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            final WifiNetworkSuggestion suggestion =
+                    new WifiNetworkSuggestion.Builder()
+                            .setSsid(WIFI_SSID)
+                            .setWpa2Passphrase(WIFI_PASS)
+                            .setIsAppInteractionRequired(true)
+                            .build();
+
+            final List<WifiNetworkSuggestion> suggestionsList =
+                    new ArrayList<WifiNetworkSuggestion>() {{
+                        add(suggestion);
+                    }};
+            final WifiManager manager =
+                    (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+
+            final int status = manager.addNetworkSuggestions(suggestionsList);
+            if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
+                System.out.println("Wifi not added");
+            }
+            final IntentFilter intentFilter =
+                    new IntentFilter(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION);
+
+            final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (!intent.getAction().equals(
+                            WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION)) {
+                        return;
+                    }
+                    System.out.println("added réussi !");
+                    // do post connect processing here...
+                }
+            };
+            context.registerReceiver(broadcastReceiver, intentFilter);
+        }
+    }
+
+    private void startConnection(List<ScanResult> listScanResult) {
+        System.out.println("startConnection >>>>> ");
+        for(ScanResult result : listScanResult){
             if(result.SSID.equals(WIFI_SSID)) {
+                // After SDK 29, it is imperative to use this way
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                     final WifiNetworkSuggestion suggestion =
                             new WifiNetworkSuggestion.Builder()
@@ -75,11 +124,11 @@ public class WifiController {
                             new ArrayList<WifiNetworkSuggestion>() {{
                                 add(suggestion);
                             }};
-                    final WifiManager manager =
-                            (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    //final WifiManager manager =
+                    //        (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
 
-                    final int status = manager.addNetworkSuggestions(suggestionsList);
+                    final int status = wifiManager.addNetworkSuggestions(suggestionsList);
                     if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
                         // do error handling here…
                     }
@@ -94,6 +143,7 @@ public class WifiController {
                                 return;
                             }
                             // do post connect processing here...
+                            //MainActivity.listen.setValue("Go to action");
                         }
                     };
                     context.registerReceiver(broadcastReceiver, intentFilter);
@@ -117,7 +167,7 @@ public class WifiController {
         }
     }
 
-    private List<ScanResult> scanSuccess() {
+    private List<ScanResult> getListScanResult() {
         List<ScanResult> results = wifiManager.getScanResults();
         System.out.println("new result size = " + results.size());
         return results;
@@ -125,5 +175,25 @@ public class WifiController {
     private void scanFailure() {
         List<ScanResult> results = wifiManager.getScanResults();
         System.out.println("old result size = " + results.size());
+    }
+
+    public boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if(networkInfo.isConnected()) {
+            System.out.println("co est ok");
+            final WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            System.out.println(wifiInfo.getSSID());
+            return wifiInfo.getSSID().equals("\"" + WIFI_SSID + "\"");
+        }
+        else {
+            System.out.println("else");
+            return false;
+        }
+    }
+
+    public WifiManager getWifiManager() {
+        return wifiManager;
     }
 }
