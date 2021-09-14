@@ -69,7 +69,7 @@ public class WifiController {
                 } else {
                     System.out.println("On est connecté au bon wifi");
                     Toast.makeText(context, "AAAAAA", Toast.LENGTH_SHORT).show();
-                    MainActivity.listenForPlayStream.setValue("Do action");
+                    OnStream.listenForPlayStream.setValue("Do action");
                 }
             }
         };
@@ -137,7 +137,7 @@ public class WifiController {
                                 return;
                             }
                             // TODO : do post connect processing here...
-                            //MainActivity.listen.setValue("Go to action");
+                            //OnStream.listen.setValue("Go to action");
                         }
                     };
                     context.registerReceiver(broadcastReceiver, intentFilter);
@@ -175,14 +175,18 @@ public class WifiController {
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        if(networkInfo.isConnected()) {
-            System.out.println("co est ok");
-            final WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-            System.out.println(wifiInfo.getSSID());
-            return wifiInfo.getSSID().equals("\"" + WIFI_SSID + "\"");
-        }
-        else {
-            System.out.println("else");
+        try {
+            if(networkInfo.isConnected()) {
+                System.out.println("co est ok");
+                final WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                System.out.println(wifiInfo.getSSID());
+                return wifiInfo.getSSID().equals("\"" + WIFI_SSID + "\"");
+            }
+            else {
+                System.out.println("else");
+                return false;
+            }
+        } catch (Exception e) {
             return false;
         }
     }

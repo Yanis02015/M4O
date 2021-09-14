@@ -2,34 +2,63 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:gravity="center_horizontal">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/activity_main_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
-        app:titleTextColor="@android:color/white"
-        app:subtitleTextColor="@color/white"
-        android:background="?attr/colorPrimary"
-        android:theme="@style/ToolbarTheme"
-        app:titleTextAppearance="@style/Toolbar.TitleText"/>
+    android:background="@drawable/background"
+    android:gravity="center">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="400dp">
-
-        <org.videolan.libvlc.util.VLCVideoLayout
-            android:id="@+id/activity_main_video_view"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center">
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="400dp"/>
+            android:layout_height="wrap_content"
+            android:text="M4O Traffic Manager"
+            android:fontFamily="sans-serif-condensed"
+            android:textColor="@color/white"
+            android:textSize="40sp"
+            android:layout_margin="45dp"
+            android:gravity="center"
+            android:textStyle="bold"/>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/activity_main_go_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Go!"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bienvenu"
+            android:fontFamily="sans-serif-condensed"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:textColor="@color/white"
+            android:gravity="center"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Conduisez prudemment"
+            android:layout_margin="5dp"
+            android:fontFamily="sans-serif-condensed"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:gravity="center"/>
+
+        <Button
+            android:id="@+id/activity_main_start_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:textSize="15sp"
+            android:text="Commencer"
+            android:textColor="@color/white"
+            android:background="@drawable/button_home"/>
+    </LinearLayout>
 </LinearLayout>
