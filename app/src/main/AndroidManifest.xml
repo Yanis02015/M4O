@@ -17,8 +17,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.M4OTrafficManager">
         <activity
+            android:name=".AboutActivity"
+            android:exported="true"
+            android:label="À Propos"
+            android:parentActivityName=".OnStream">
+            <meta-data
+                android:name="android:supportsRtl.PARENT_ACTIVITY"
+                android:value=".OnStream" />
+        </activity>
+        <activity
             android:name=".OnStream"
-            android:exported="true" />
+            android:label="Flux Vidéo"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android:supportsRtl.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WifiController {
-    private static final int REQUEST_CODE_ASK_PERMISSION = 1;
+    // L'idéal serait de récupérer ceci via une API
+    // Pour ne pas avoir à modifier le code à chaque fois
+    // que ces informations changent
     public static final String WIFI_SSID = "WEB_WIFI";
     public static final String WIFI_PASS = "AZEROTH.1406";
 
@@ -54,23 +56,22 @@ public class WifiController {
         BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-
-                boolean success = intent.getBooleanExtra(
+            boolean success = intent.getBooleanExtra(
                         WifiManager.EXTRA_RESULTS_UPDATED, false);
-                boolean connectionSuccess = isConnected();
+            boolean connectionSuccess = isConnected();
                 System.out.println(success + " " + connectionSuccess);
 
-                if (success && !isConnected()) {
-                    System.out.println("On est pas connecté >>> startConnection");
-                    startConnection(getListScanResult());
-                } else if(!isConnected()) {
-                    System.out.println("Impossible de scanner");
-                    scanFailure();
-                } else {
-                    System.out.println("On est connecté au bon wifi");
-                    Toast.makeText(context, "AAAAAA", Toast.LENGTH_SHORT).show();
-                    OnStream.listenForPlayStream.setValue("Do action");
-                }
+            if (success && !isConnected()) {
+                System.out.println("On est pas connecté >>> startConnection");
+                startConnection(getListScanResult());
+            } else if (!isConnected()) {
+                System.out.println("Impossible de scanner");
+                scanFailure();
+            } else {
+                System.out.println("On est connecté au bon wifi");
+                Toast.makeText(context, "AAAAAA", Toast.LENGTH_SHORT).show();
+                OnStream.listenForPlayStream.setValue("Do action");
+            }
             }
         };
 
@@ -106,8 +107,8 @@ public class WifiController {
 
     private void startConnection(List<ScanResult> listScanResult) {
         System.out.println("startConnection >>>>> ");
-        for(ScanResult result : listScanResult){
-            if(result.SSID.equals(WIFI_SSID)) {
+        for (ScanResult result : listScanResult) {
+            if (result.SSID.equals(WIFI_SSID)) {
                 // After SDK 29, it is imperative to use this way
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                     final WifiNetworkSuggestion suggestion =
@@ -124,7 +125,7 @@ public class WifiController {
 
                     final int status = wifiManager.addNetworkSuggestions(suggestionsList);
                     if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
-                        // Todo error handling here…
+                        Toast.makeText(context, "Erreur de connexion au point d'accés", Toast.LENGTH_SHORT).show();
                     }
                     final IntentFilter intentFilter =
                             new IntentFilter(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION);
@@ -136,8 +137,7 @@ public class WifiController {
                                     WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION)) {
                                 return;
                             }
-                            // TODO : do post connect processing here...
-                            //OnStream.listen.setValue("Go to action");
+                            Toast.makeText(context, "Connexion réussi", Toast.LENGTH_SHORT).show();
                         }
                     };
                     context.registerReceiver(broadcastReceiver, intentFilter);
@@ -166,6 +166,7 @@ public class WifiController {
         System.out.println("new result size = " + results.size());
         return results;
     }
+
     private void scanFailure() {
         List<ScanResult> results = wifiManager.getScanResults();
         System.out.println("old result size = " + results.size());
@@ -176,13 +177,12 @@ public class WifiController {
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         try {
-            if(networkInfo.isConnected()) {
+            if (networkInfo.isConnected()) {
                 System.out.println("co est ok");
                 final WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                 System.out.println(wifiInfo.getSSID());
                 return wifiInfo.getSSID().equals("\"" + WIFI_SSID + "\"");
-            }
-            else {
+            } else {
                 System.out.println("else");
                 return false;
             }

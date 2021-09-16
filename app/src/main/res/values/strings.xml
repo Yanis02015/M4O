@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">M4O Traffic Manager</string>
+    <string name="description">\tUn groupe d\'étudiant à l\'université de Béjaïa pationner par le monde du numérique et l\'informatique</string>
+    <string name="remerciment">\tCette application n\'aurait pas pu voir le jour sans la precieuse aide de monsieur <strong>Nadim Raghab</strong></string>
+    <string name="email"><strong>Email : </strong>m4o.feedback@gmail.com</string>
+    <string name="adresse"><strong>Adresse : </strong>Algérie, Béjaïa, Béjaïa 06000</string>
+    <string name="abderrahmane_oukachbi">&#183; Abderrahmane OUKACHBI</string>
+    <string name="nesrine_ouguergouz">&#183; Nesrine OUGUERGOUZ</string>
+    <string name="sonia_ouarab">&#183; Sonia OUARAB</string>
+    <string name="lyna_mouhoubi">&#183; Lyna MOUHOUBI</string>
+    <string name="yanis_oulhaci">&#183; Yanis OULHACI</string>
+
 </resources>
