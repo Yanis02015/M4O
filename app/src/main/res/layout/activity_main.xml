@@ -10,16 +10,28 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center">
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <ImageView
+            android:layout_width="290dp"
+            android:layout_height="210dp"
+            android:layout_marginBottom="-65dp"
+            android:src="@mipmap/ic_launcher_foreground"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="M4O Traffic Manager"
+            android:text="Traffic Manager"
             android:fontFamily="sans-serif-condensed"
             android:textColor="@color/white"
             android:textSize="40sp"
-            android:layout_margin="45dp"
-            android:gravity="center"
+            android:layout_marginBottom="60dp"
             android:textStyle="bold"/>
     </LinearLayout>
 

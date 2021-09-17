@@ -17,6 +17,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.M4OTrafficManager">
         <activity
+            android:name=".ContactActivity"
+            android:exported="true"
+            android:label="Nous Contacter"
+            android:parentActivityName=".OnStream">
+            <meta-data
+                android:name="android:supportsRtl.PARENT_ACTIVITY"
+                android:value=".OnStream" />
+        </activity>
+        <activity
             android:name=".AboutActivity"
             android:exported="true"
             android:label="À Propos"

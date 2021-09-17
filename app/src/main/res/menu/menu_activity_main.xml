@@ -6,4 +6,11 @@
         app:showAsAction="never"
 
         android:title="About"/>
+
+    <item
+        android:id="@+id/menu_activity_main_contact"
+        app:showAsAction="never"
+
+        android:title="Nous contacter"/>
+
 </menu>

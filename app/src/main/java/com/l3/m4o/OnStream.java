@@ -86,6 +86,9 @@ public class OnStream extends AppCompatActivity implements IVLCVout.Callback{
             Intent intent = new Intent(OnStream.this, AboutActivity.class);
             startActivity(intent);
             return true;
+        } else if (item.getItemId() == R.id.menu_activity_main_contact) {
+            Intent intent = new Intent(OnStream.this, ContactActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }

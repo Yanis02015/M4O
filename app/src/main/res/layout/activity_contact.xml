@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context=".ContactActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/activity_contact_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ToolbarTheme"
+        app:subtitleTextColor="@color/white"
+        app:titleTextAppearance="@style/Toolbar.TitleText"
+        app:titleTextColor="@android:color/white" />
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="Nous contacter"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="11dp"
+        android:layout_gravity="start"
+        android:textColor="@color/black"
+        android:text="Nom complet*"/>
+
+    <EditText
+        android:id="@+id/activity_contact_name_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:background="@drawable/edittext_bg"
+        android:padding="10dp"
+        android:layout_margin="10dp"
+        android:hint="Nom complet"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="11dp"
+        android:layout_gravity="start"
+        android:textColor="@color/black"
+        android:text="Objet*"/>
+
+
+    <EditText
+        android:id="@+id/activity_contact_subject_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailSubject"
+        android:background="@drawable/edittext_bg"
+        android:padding="10dp"
+        android:layout_margin="10dp"
+        android:hint="Objet"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="11dp"
+        android:layout_gravity="start"
+        android:textColor="@color/black"
+        android:text="E-Mail*"/>
+
+
+    <EditText
+        android:id="@+id/activity_contact_email_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edittext_bg"
+        android:padding="10dp"
+        android:inputType="textEmailAddress"
+        android:layout_margin="10dp"
+        android:hint="E-Mail"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="11dp"
+        android:layout_gravity="start"
+        android:textColor="@color/black"
+        android:text="Votre message"/>
+
+    <EditText
+        android:id="@+id/activity_contact_message_txt"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:inputType="text|textMultiLine"
+        android:gravity="top"
+        android:background="@drawable/edittext_bg"
+        android:padding="10dp"
+        android:layout_margin="10dp"
+        android:hint="Message"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/activity_contact_send_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:layout_margin="10dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/edittext_bg"
+        android:text="Envoyé &#x2794;"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"/>
+
+</LinearLayout>
