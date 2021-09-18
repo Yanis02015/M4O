@@ -69,7 +69,7 @@ public class WifiController {
                 scanFailure();
             } else {
                 System.out.println("On est connecté au bon wifi");
-                Toast.makeText(context, "AAAAAA", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Connexion réussi", Toast.LENGTH_SHORT).show();
                 OnStream.listenForPlayStream.setValue("Do action");
             }
             }
